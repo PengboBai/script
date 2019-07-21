@@ -9,8 +9,8 @@ services:
     #   - "2222:2222"
     network_mode: "host"
     volumes:
-      - /opt/phabricator:/opt/phabricator
-      - /opt/phabricator/repo:/var/repo
+      - /base_path/phabricator:/opt/phabricator
+      - /base_path/phabricator/repo:/var/repo
     tty: true
     environment:
       - LANG=C.UTF-8
@@ -24,10 +24,11 @@ services:
       - "8888:8080"
       - "50000:50000"
     volumes:
-      - /opt/jenkins:/var/jenkins_home
+      - /base_path/jenkins:/var/jenkins_home
       - /usr/bin/docker:/usr/bin/docker
       - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/workspace:/home/workspace
+      - /base_path/workspace:/home/workspace
+      - /base_path/script:/home/script
     tty: true
     environment:
       - LANG=C.UTF-8
