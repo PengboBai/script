@@ -1,5 +1,7 @@
 #!/bin/bash
+
 # author 白鹏博 baipengbb@163.com
+
 set -x
 # install docker docker-compose
 issue=`cat /etc/issue`
@@ -28,6 +30,19 @@ then
     mkdir -p ${base_path}/workspace
 fi
 
+docker_file=${base_path}/docker-compose.yml
+if [[ -f ${docker_file} ]]
+then
+    # docker-compose stop and rm
+    container=`sudo docker-compose -f ${base_path}/docker-compose.yml ps`
+    if [[ "x${container}" != "x" ]]
+    then
+        sudo docker-compose -f ${base_path}/docker-compose.yml stop
+        sudo docker-compose -f ${base_path}/docker-compose.yml rm -f
+    fi
+fi
+
+sudo chown -R ${USER}:${USER} ${base_path}
 cd ${base_path}
 # clone repo from github
 repo_list=( phabricator script jenkins)
@@ -36,6 +51,9 @@ do
     if [[ ! -d "${base_path}/${repo}" ]]
     then
         git clone https://github.com/baipengbo/${repo}.git
+    else
+        cd ${base_path}/${repo}
+        git pull
     fi
 done
 
@@ -50,13 +68,6 @@ sudo sed "s/\/base_path/${base_path//\//\\/}/g" ${compose_file}>>${base_path}/do
 # config env base_path for jenkins
 sed -i "s/<string>\/base_path<\/string>/<string>${base_path//\//\\/}<\/string>/g" ${base_path}/jenkins/config.xml
 
-# docker-compose up
-container=`sudo docker-compose -f ${base_path}/docker-compose.yml ps`
-if [[ "x${container}" == "x" ]]
-then
-    sudo docker-compose -f ${base_path}/docker-compose.yml stop
-    sudo docker-compose -f ${base_path}/docker-compose.yml rm -f
-fi
 sudo docker-compose -f ${base_path}/docker-compose.yml up -d
 
 echo "Init env success"
