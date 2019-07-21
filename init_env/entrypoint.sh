@@ -6,6 +6,10 @@ chmod 755 /opt/phabricator/hooks/phabricator-ssh-hook.sh
 chown -R mysql:mysql /opt/phabricator/mysql
 /etc/init.d/mysql start
 source /etc/environment
+config set mysql.host localhost
+config set mysql.port 3306
+config set mysql.user root
+config set mysql.pass root2ci
 phd start
 /usr/sbin/sshd -f /opt/phabricator/sshd_config.phabricator
 echo "apache2 status"
